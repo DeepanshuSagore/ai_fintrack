@@ -29,6 +29,21 @@ const DATE_RANGES = {
   ALL: { label: "All Time", days: null },
 };
 
+function CustomChartTooltip({ active, payload, label }) {
+  if (!active || !payload || payload.length === 0) return null;
+
+  const income = payload.find((item) => item.dataKey === "income")?.value || 0;
+  const expense = payload.find((item) => item.dataKey === "expense")?.value || 0;
+
+  return (
+    <div className="rounded-md border bg-background px-3 py-2 shadow-sm">
+      <p className="mb-1 text-sm font-medium">{label}</p>
+      <p className="text-sm text-green-500">Income : ${Number(income).toFixed(2)}</p>
+      <p className="text-sm text-red-500">Expense : ${Number(expense).toFixed(2)}</p>
+    </div>
+  );
+}
+
 export function AccountChart({ transactions }) {
   const [dateRange, setDateRange] = useState("1M");
 
@@ -140,14 +155,7 @@ export function AccountChart({ transactions }) {
                 axisLine={false}
                 tickFormatter={(value) => `$${value}`}
               />
-              <Tooltip
-                formatter={(value) => [`$${value}`, undefined]}
-                contentStyle={{
-                  backgroundColor: "hsl(var(--popover))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "var(--radius)",
-                }}
-              />
+              <Tooltip content={<CustomChartTooltip />} />
               <Legend />
               <Bar
                 dataKey="income"
