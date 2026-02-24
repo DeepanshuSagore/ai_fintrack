@@ -5,8 +5,8 @@ import {
   PieChart,
   Pie,
   Cell,
+  Sector,
   ResponsiveContainer,
-  Tooltip,
   Legend,
 } from "recharts";
 import { format } from "date-fns";
@@ -32,10 +32,57 @@ const COLORS = [
   "#9FA8DA",
 ];
 
+const RADIAN = Math.PI / 180;
+
+const renderActiveShape = (props) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  return (
+    <g>
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius + 6}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+        style={{ filter: `drop-shadow(0 0 8px ${fill})` }}
+      />
+    </g>
+  );
+};
+
 export function DashboardOverview({ accounts, transactions }) {
   const [selectedAccountId, setSelectedAccountId] = useState(
     accounts.find((a) => a.isDefault)?.id || accounts[0]?.id
   );
+  const [activeIndex, setActiveIndex] = useState(null);
+
+  const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, name, value, fill, index }) => {
+    const isActive = index === activeIndex;
+    const sin = Math.sin(-RADIAN * midAngle);
+    const cos = Math.cos(-RADIAN * midAngle);
+    const lx = cx + (outerRadius + 20) * cos;
+    const ly = cy + (outerRadius + 20) * sin;
+    return (
+      <text
+        x={lx}
+        y={ly}
+        textAnchor={cos >= 0 ? "start" : "end"}
+        dominantBaseline="central"
+        fill={fill}
+        fontSize={isActive ? 14 : 12}
+        fontWeight={isActive ? 600 : 400}
+        fontFamily="inherit"
+      >
+        {`${name}: ₹${value.toFixed(2)}`}
+      </text>
+    );
+  };
+
+  const currentDate = new Date();
+  const currentMonthKey = format(currentDate, "yyyy-MM");
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthKey);
 
   // Filter transactions for selected account
   const accountTransactions = transactions.filter(
@@ -47,14 +94,28 @@ export function DashboardOverview({ accounts, transactions }) {
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
 
-  // Calculate expense breakdown for current month
-  const currentDate = new Date();
+  // Derive available months from expense transactions (sorted newest first)
+  const availableMonths = Array.from(
+    new Set(
+      accountTransactions
+        .filter((t) => t.type === "EXPENSE")
+        .map((t) => format(new Date(t.date), "yyyy-MM"))
+    )
+  ).sort((a, b) => b.localeCompare(a));
+
+  // Ensure current month is always in the list
+  if (!availableMonths.includes(currentMonthKey)) {
+    availableMonths.unshift(currentMonthKey);
+  }
+
+  // Calculate expense breakdown for selected month
+  const [selYear, selMonth] = selectedMonth.split("-").map(Number);
   const currentMonthExpenses = accountTransactions.filter((t) => {
     const transactionDate = new Date(t.date);
     return (
       t.type === "EXPENSE" &&
-      transactionDate.getMonth() === currentDate.getMonth() &&
-      transactionDate.getFullYear() === currentDate.getFullYear()
+      transactionDate.getMonth() === selMonth - 1 &&
+      transactionDate.getFullYear() === selYear
     );
   });
 
@@ -146,10 +207,22 @@ export function DashboardOverview({ accounts, transactions }) {
 
       {/* Expense Breakdown Card */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="text-base font-normal">
             Monthly Expense Breakdown
           </CardTitle>
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Select month" />
+            </SelectTrigger>
+            <SelectContent>
+              {availableMonths.map((monthKey) => (
+                <SelectItem key={monthKey} value={monthKey}>
+                  {format(new Date(monthKey + "-01"), "MMMM yyyy")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </CardHeader>
         <CardContent className="p-0 pb-5">
           {pieChartData.length === 0 ? (
@@ -167,23 +240,22 @@ export function DashboardOverview({ accounts, transactions }) {
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, value }) => `${name}: ₹${value.toFixed(2)}`}
+                    activeIndex={activeIndex}
+                    activeShape={renderActiveShape}
+                    onMouseEnter={(_, index) => setActiveIndex(index)}
+                    onMouseLeave={() => setActiveIndex(null)}
+                    label={renderCustomLabel}
+                    labelLine={false}
+                    isAnimationActive={false}
                   >
                     {pieChartData.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
                         fill={COLORS[index % COLORS.length]}
+                        opacity={activeIndex === null || activeIndex === index ? 1 : 0.55}
                       />
                     ))}
                   </Pie>
-                  <Tooltip
-                    formatter={(value) => `₹${value.toFixed(2)}`}
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--popover))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "var(--radius)",
-                    }}
-                  />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
