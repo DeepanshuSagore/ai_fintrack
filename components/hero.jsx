@@ -35,7 +35,7 @@ const HeroSection = () => {
         <h1 className="text-5xl md:text-8xl lg:text-[105px] pb-6 gradient-title">
           Manage Your Finances <br /> with Intelligence
         </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
           An AI-powered financial management platform that provides personalized insights and recommendations. Take control of your finances with intelligent automation and real-time analytics tailored to your unique goals.
         </p>
         <div className="flex justify-center space-x-4">

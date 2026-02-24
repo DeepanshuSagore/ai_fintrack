@@ -4,21 +4,22 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { LayoutDashboard, PenBox } from "lucide-react";
 import { checkUser } from "@/lib/checkUser";
+import { ThemeToggle } from "./theme-toggle";
 const Header = async () => {
   await checkUser();
   return (
-    <div className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
+    <div className="fixed top-0 w-full bg-white/80 dark:bg-gray-950/80 backdrop-blur-md z-50 border-b dark:border-white/10">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href= "/">
           <Image
-          src={"/logo1.jpeg"} alt="fintrack logo"
+          src={"/logo-big.png"} alt="fintrack logo"
           height={60} width={200}
-          className="h-12 w-auto object-contain"
+          className="h-20 w-auto object-contain"
           />
         </Link>
 <div className="flex items-center space-x-4">
   <SignedIn>
-      <Link href={"/dashboard"} className="text-gray-600 hover:text-blue-600 flex items-center gap-2">
+      <Link href={"/dashboard"} className="text-gray-600 dark:text-gray-300 hover:text-blue-600 flex items-center gap-2">
       <Button variant="outline">
         <LayoutDashboard size={18}/>
         <span className="hidden md:inline">Dashboard</span>
@@ -50,6 +51,7 @@ const Header = async () => {
         }}
         />
       </SignedIn>
+      <ThemeToggle />
 </div>
       </nav>
     </div>
