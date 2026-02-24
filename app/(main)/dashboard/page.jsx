@@ -30,7 +30,7 @@ async function DashboardPage() {
       {/* OverView */}
 
       {/* Accounts Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">
         <CreateAccountDrawer>
          <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed h-full flex">
           <CardContent className="flex flex-1 flex-col items-center justify-center text-muted-foreground py-0">
