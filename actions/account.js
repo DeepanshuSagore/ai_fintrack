@@ -95,6 +95,77 @@ export async function getAccountWithTransactions(accountId) {
     transactions: account.transactions.map(serializeDecimal),
   };
 }
+export async function deleteAccount(accountId) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    const account = await db.account.findFirst({
+      where: { id: accountId, userId: user.id },
+    });
+
+    if (!account) throw new Error("Account not found");
+
+    await db.account.delete({
+      where: { id: accountId },
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateAccount(accountId, data) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+
+    if (!user) throw new Error("User not found");
+
+    const account = await db.account.findFirst({
+      where: { id: accountId, userId: user.id },
+    });
+
+    if (!account) throw new Error("Account not found");
+
+    // If setting as default, unset existing default first
+    if (data.isDefault) {
+      await db.account.updateMany({
+        where: { userId: user.id, isDefault: true },
+        data: { isDefault: false },
+      });
+    }
+
+    const updated = await db.account.update({
+      where: { id: accountId },
+      data: {
+        name: data.name,
+        type: data.type,
+        balance: parseFloat(data.balance),
+        isDefault: data.isDefault,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    revalidatePath(`/account/${accountId}`);
+    return { success: true, data: serializeDecimal(updated) };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
 export async function bulkDeleteTransactions(transactionIds) {
   try {
     const { userId } = await auth();
