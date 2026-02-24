@@ -38,8 +38,8 @@ function CustomChartTooltip({ active, payload, label }) {
   return (
     <div className="rounded-md border bg-background px-3 py-2 shadow-sm">
       <p className="mb-1 text-sm font-medium">{label}</p>
-      <p className="text-sm text-green-500">Income : ${Number(income).toFixed(2)}</p>
-      <p className="text-sm text-red-500">Expense : ${Number(expense).toFixed(2)}</p>
+      <p className="text-sm text-green-500">Income : ₹{Number(income).toFixed(2)}</p>
+      <p className="text-sm text-red-500">Expense : ₹{Number(expense).toFixed(2)}</p>
     </div>
   );
 }
@@ -114,13 +114,13 @@ export function AccountChart({ transactions }) {
           <div className="text-center">
             <p className="text-muted-foreground">Total Income</p>
             <p className="text-lg font-bold text-green-500">
-              ${totals.income.toFixed(2)}
+              ₹{totals.income.toFixed(2)}
             </p>
           </div>
           <div className="text-center">
             <p className="text-muted-foreground">Total Expenses</p>
             <p className="text-lg font-bold text-red-500">
-              ${totals.expense.toFixed(2)}
+              ₹{totals.expense.toFixed(2)}
             </p>
           </div>
           <div className="text-center">
@@ -132,7 +132,7 @@ export function AccountChart({ transactions }) {
                   : "text-red-500"
               }`}
             >
-              ${(totals.income - totals.expense).toFixed(2)}
+              ₹{(totals.income - totals.expense).toFixed(2)}
             </p>
           </div>
         </div>
@@ -153,7 +153,7 @@ export function AccountChart({ transactions }) {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => `₹${value}`}
               />
               <Tooltip content={<CustomChartTooltip />} />
               <Legend />

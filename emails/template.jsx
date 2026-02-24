@@ -84,19 +84,19 @@ export default function EmailTemplate({
                 <div style={{ ...styles.statCard, borderTop: "4px solid #22c55e" }}>
                   <Text style={styles.statLabel}>Total Income</Text>
                   <Text style={{ ...styles.statValue, color: "#22c55e" }}>
-                    ${Number(data?.stats.totalIncome).toFixed(2)}
+                    ₹{Number(data?.stats.totalIncome).toFixed(2)}
                   </Text>
                 </div>
                 <div style={{ ...styles.statCard, borderTop: "4px solid #ef4444" }}>
                   <Text style={styles.statLabel}>Total Expenses</Text>
                   <Text style={{ ...styles.statValue, color: "#ef4444" }}>
-                    ${Number(data?.stats.totalExpenses).toFixed(2)}
+                    ₹{Number(data?.stats.totalExpenses).toFixed(2)}
                   </Text>
                 </div>
                 <div style={{ ...styles.statCard, borderTop: `4px solid ${isPositiveNet ? "#3b82f6" : "#f97316"}` }}>
                   <Text style={styles.statLabel}>Net Savings</Text>
                   <Text style={{ ...styles.statValue, color: isPositiveNet ? "#3b82f6" : "#f97316" }}>
-                    {isPositiveNet ? "+" : ""}${net.toFixed(2)}
+                    {isPositiveNet ? "+" : ""}₹{net.toFixed(2)}
                   </Text>
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function EmailTemplate({
                         <div key={category}>
                           <div style={styles.categoryRow}>
                             <Text style={styles.categoryName}>{category.charAt(0).toUpperCase() + category.slice(1)}</Text>
-                            <Text style={styles.categoryAmount}>${Number(amount).toFixed(2)}</Text>
+                            <Text style={styles.categoryAmount}>₹{Number(amount).toFixed(2)}</Text>
                           </div>
                           {/* Progress bar */}
                           <div style={styles.progressBg}>
@@ -212,19 +212,19 @@ export default function EmailTemplate({
                 <div style={{ ...styles.statCard, borderTop: "4px solid #6366f1" }}>
                   <Text style={styles.statLabel}>Monthly Budget</Text>
                   <Text style={{ ...styles.statValue, color: "#6366f1" }}>
-                    ${Number(data?.budgetAmount).toFixed(2)}
+                    ₹{Number(data?.budgetAmount).toFixed(2)}
                   </Text>
                 </div>
                 <div style={{ ...styles.statCard, borderTop: `4px solid ${alertColor}` }}>
                   <Text style={styles.statLabel}>Spent So Far</Text>
                   <Text style={{ ...styles.statValue, color: alertColor }}>
-                    ${Number(data?.totalExpenses).toFixed(2)}
+                    ₹{Number(data?.totalExpenses).toFixed(2)}
                   </Text>
                 </div>
                 <div style={{ ...styles.statCard, borderTop: `4px solid ${remaining >= 0 ? "#22c55e" : "#ef4444"}` }}>
                   <Text style={styles.statLabel}>Remaining</Text>
                   <Text style={{ ...styles.statValue, color: remaining >= 0 ? "#22c55e" : "#ef4444" }}>
-                    ${remaining.toFixed(2)}
+                    ₹{remaining.toFixed(2)}
                   </Text>
                 </div>
               </div>
