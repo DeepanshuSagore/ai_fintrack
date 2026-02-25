@@ -75,7 +75,7 @@ export function DashboardOverview({ accounts, transactions }) {
         fontWeight={isActive ? 600 : 400}
         fontFamily="inherit"
       >
-        {`${name}: ₹${value.toFixed(2)}`}
+        {`${name}: Rs${value.toFixed(2)}`}
       </text>
     );
   };
